@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+ * Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause-Clear
  */
 
@@ -81,16 +81,23 @@ public class ExtPhoneCallbackListener {
 
     private Handler mHandler;
     IExtPhoneCallback mCallback = new IExtPhoneCallbackStub(this);
+    private HandlerThread mHandlerThread;
 
     public ExtPhoneCallbackListener() {
-        HandlerThread headlerThread = new HandlerThread(TAG);
-        headlerThread.start();
-        Looper looper = headlerThread.getLooper();
+        mHandlerThread = new HandlerThread(TAG);
+        mHandlerThread.start();
+        Looper looper = mHandlerThread.getLooper();
         init(looper);
     }
 
     public ExtPhoneCallbackListener(Looper looper) {
         init(looper);
+    }
+
+    public void cleanUp() {
+        if (mHandlerThread != null) {
+            mHandlerThread.quit();
+        }
     }
 
     private void init(Looper looper) {
